@@ -41,7 +41,7 @@ class MainViewController: UIViewController {
         $0.textAlignment = .left
         $0.font = UIFont(name: "Inter-Medium", size: 15)
         $0.textColor = UIColor(rgb: 0x050510)
-        //        $0.addTarget(self, action: #selector(priceValueChanged), for: .editingChanged)
+        //        $0.addTarget(self, action: #selector(valueChanged), for: .editingChanged)
         return $0
     }(UITextField())
     
@@ -68,6 +68,21 @@ class MainViewController: UIViewController {
         return collection
     }()
     
+    private let collectionLineView: UIView = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.backgroundColor = UIColor(rgb: 0xC3C3C6)
+        return $0
+    }(UIView())
+    
+    private lazy var mainTableView: UITableView = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.register(MainTableViewCell.self, forCellReuseIdentifier: MainTableViewCell.identifier)
+        $0.dataSource = self
+        $0.delegate = self
+        $0.separatorColor = .clear
+        return $0
+    }(UITableView())
+    
     
     
     
@@ -84,6 +99,8 @@ class MainViewController: UIViewController {
                 self.departmentList = DepartmentModel.makeDepartmentsList(arrey: self.tempData)
                 self.collectionViewDepartment.reloadData()
                 self.collectionViewDepartment.layoutIfNeeded()
+                self.mainTableView.reloadData()
+                self.mainTableView.layoutIfNeeded()
             }
         }
         layout()
@@ -91,7 +108,7 @@ class MainViewController: UIViewController {
     
     private func layout() {
         
-        [backGrSearchView, imgSearchView, textField, filterImg, collectionViewDepartment].forEach{view.addSubview($0)}
+        [backGrSearchView, imgSearchView, textField, filterImg, collectionViewDepartment, collectionLineView, mainTableView].forEach{view.addSubview($0)}
         
         NSLayoutConstraint.activate([
             backGrSearchView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
@@ -119,6 +136,16 @@ class MainViewController: UIViewController {
             collectionViewDepartment.topAnchor.constraint(equalTo: backGrSearchView.bottomAnchor, constant: 14),
             collectionViewDepartment.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             collectionViewDepartment.heightAnchor.constraint(equalToConstant: 32),
+            
+            collectionLineView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionLineView.topAnchor.constraint(equalTo: collectionViewDepartment.bottomAnchor),
+            collectionLineView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionLineView.heightAnchor.constraint(equalToConstant: 0.5),
+            
+            mainTableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            mainTableView.topAnchor.constraint(equalTo: collectionLineView.bottomAnchor, constant: 16),
+            mainTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 16),
+            mainTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
     
@@ -195,5 +222,27 @@ extension MainViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         
+    }
+}
+
+//MARK: - UITableViewDataSource
+extension MainViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return tempData.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: MainTableViewCell.identifier, for: indexPath) as! MainTableViewCell
+        cell.setupCell(item: tempData[indexPath.row])
+//        cell.delegate = self
+//        observerForTableView += 1
+        return cell
+    }
+}
+
+//MARK: - UITableViewDelegate
+extension MainViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        80
     }
 }
