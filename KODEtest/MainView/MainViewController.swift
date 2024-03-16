@@ -12,11 +12,17 @@ class MainViewController: UIViewController {
     //Регулирует стиль первой ячейки при создании, не дает ячейке снова изменить стиль при пересоздании
     private var observerCollectionCell = 0
     
+    //Фиксаторы состояний переключения коллекции департаментов
     private var currentSelected : Int?
     private var previousSelected : IndexPath?
     
+    //Временный список персон одного департамента для фильтрации
+    var peopleFromDepartment: [Item] = []
+    
+    //Список департаментов
     var departmentList = [String]()
     
+    //Массив полученных данных с полным списком людей
     var tempData: [Item] = []
     
     private let backGrSearchView: UIView = {
@@ -218,6 +224,15 @@ extension MainViewController: UICollectionViewDelegateFlowLayout {
         currentSelected = indexPath.item
         previousSelected = indexPath
         collectionView.reloadItems(at: [indexPath])
+        
+        //Часть кода фильтрации по департаменту
+        peopleFromDepartment = []
+        for i in tempData {
+            if i.department == departmentList[indexPath.item] {
+                peopleFromDepartment.append(i)
+            }
+        }
+        mainTableView.reloadData()
     }
     
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
@@ -228,14 +243,20 @@ extension MainViewController: UICollectionViewDelegateFlowLayout {
 //MARK: - UITableViewDataSource
 extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tempData.count
+        if !peopleFromDepartment.isEmpty {
+            return peopleFromDepartment.count
+        } else {
+            return tempData.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: MainTableViewCell.identifier, for: indexPath) as! MainTableViewCell
-        cell.setupCell(item: tempData[indexPath.row])
-//        cell.delegate = self
-//        observerForTableView += 1
+        if !peopleFromDepartment.isEmpty {
+            cell.setupCell(item: peopleFromDepartment[indexPath.row])
+        } else {
+            cell.setupCell(item: tempData[indexPath.row])
+        }
         return cell
     }
 }
