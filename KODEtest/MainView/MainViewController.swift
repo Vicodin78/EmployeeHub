@@ -9,6 +9,8 @@ import UIKit
 
 class MainViewController: UIViewController {
     
+//    let vc = SortingViewController()
+    
     //Регулирует стиль первой ячейки при создании, не дает ячейке снова изменить стиль при пересоздании
     private var observerCollectionCell = 0
     
@@ -54,8 +56,13 @@ class MainViewController: UIViewController {
     private let filterImg: UIImageView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.image = UIImage(systemName: "list.bullet.indent")
-        $0.tintColor = UIColor(rgb: 0xC3C3C6)
+        if UserSettings.sortMarkerState == 0 {
+            $0.tintColor = UIColor(rgb: 0xC3C3C6)
+        } else {
+            $0.tintColor = UIColor(rgb: 0x6534FF)
+        }
         $0.contentMode = .scaleAspectFit
+        $0.isUserInteractionEnabled = true
         return $0
     }(UIImageView())
     
@@ -89,14 +96,26 @@ class MainViewController: UIViewController {
         return $0
     }(UITableView())
     
+    private func tapGesturesForView() {
+        let tapGest = UITapGestureRecognizer(target: self, action: #selector(tapAction))
+        filterImg.addGestureRecognizer(tapGest)
+    }
     
+    @objc private func tapAction() {
+        let vc = SortingViewController()
+        vc.delegateSortMarkerState = self
+        present(vc, animated: true)
+    }
     
-    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+//        vc.delegateSortMarkerState = self
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        
+        tapGesturesForView()
         
         APIManager.shared.getData { [weak self] values in
             DispatchQueue.main.async {
@@ -253,9 +272,21 @@ extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: MainTableViewCell.identifier, for: indexPath) as! MainTableViewCell
         if !peopleFromDepartment.isEmpty {
-            cell.setupCell(item: peopleFromDepartment[indexPath.row])
+            switch UserSettings.sortMarkerState {
+            case 0:
+                peopleFromDepartment.sort { $0.firstName < $1.firstName }
+                cell.setupCell(item: peopleFromDepartment[indexPath.row])
+            default:
+                cell.setupCell(item: peopleFromDepartment[indexPath.row])
+            }
         } else {
-            cell.setupCell(item: tempData[indexPath.row])
+            switch UserSettings.sortMarkerState {
+            case 0:
+                tempData.sort { $0.firstName < $1.firstName }
+                cell.setupCell(item: tempData[indexPath.row])
+            default:
+                cell.setupCell(item: tempData[indexPath.row])
+            }
         }
         return cell
     }
@@ -265,5 +296,16 @@ extension MainViewController: UITableViewDataSource {
 extension MainViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         80
+    }
+}
+
+extension MainViewController: SortingViewDelegate {
+    func sortMarkerStateChange() {
+        if UserSettings.sortMarkerState == 0 {
+            filterImg.tintColor = UIColor(rgb: 0xC3C3C6)
+        } else {
+            filterImg.tintColor = UIColor(rgb: 0x6534FF)
+        }
+        self.mainTableView.reloadData()
     }
 }

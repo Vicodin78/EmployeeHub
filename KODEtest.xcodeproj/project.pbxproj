@@ -15,6 +15,10 @@
 		78CD05042BA4EE2300A24026 /* ModelDepartmentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78CD05032BA4EE2300A24026 /* ModelDepartmentList.swift */; };
 		78CD05082BA5D8D300A24026 /* MainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78CD05072BA5D8D300A24026 /* MainTableViewCell.swift */; };
 		78CD050A2BA5DF2800A24026 /* Inter-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 78CD05092BA5DF2800A24026 /* Inter-Regular.otf */; };
+		78CD050C2BA5F4D300A24026 /* SortingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78CD050B2BA5F4D300A24026 /* SortingViewController.swift */; };
+		78CD050F2BA5FA1F00A24026 /* SortingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78CD050E2BA5FA1F00A24026 /* SortingTableViewCell.swift */; };
+		78CD05112BA6059D00A24026 /* ModelDataForSorting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78CD05102BA6059D00A24026 /* ModelDataForSorting.swift */; };
+		78CD05132BA6572000A24026 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78CD05122BA6572000A24026 /* UserSettings.swift */; };
 		78D729A42BA486D100296A31 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78D729A32BA486D100296A31 /* AppDelegate.swift */; };
 		78D729A82BA486D100296A31 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78D729A72BA486D100296A31 /* MainViewController.swift */; };
 		78D729AD2BA486D200296A31 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 78D729AC2BA486D200296A31 /* Assets.xcassets */; };
@@ -31,6 +35,10 @@
 		78CD05032BA4EE2300A24026 /* ModelDepartmentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelDepartmentList.swift; sourceTree = "<group>"; };
 		78CD05072BA5D8D300A24026 /* MainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewCell.swift; sourceTree = "<group>"; };
 		78CD05092BA5DF2800A24026 /* Inter-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Regular.otf"; sourceTree = "<group>"; };
+		78CD050B2BA5F4D300A24026 /* SortingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortingViewController.swift; sourceTree = "<group>"; };
+		78CD050E2BA5FA1F00A24026 /* SortingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortingTableViewCell.swift; sourceTree = "<group>"; };
+		78CD05102BA6059D00A24026 /* ModelDataForSorting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelDataForSorting.swift; sourceTree = "<group>"; };
+		78CD05122BA6572000A24026 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		78D729A02BA486D100296A31 /* KODEtest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KODEtest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		78D729A32BA486D100296A31 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		78D729A72BA486D100296A31 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -77,8 +85,18 @@
 				78CD05032BA4EE2300A24026 /* ModelDepartmentList.swift */,
 				78D729B92BA4984200296A31 /* APIManager.swift */,
 				784423B02BA4A0DF00E500C3 /* ModelData.swift */,
+				78CD05102BA6059D00A24026 /* ModelDataForSorting.swift */,
 			);
 			path = AppModel;
+			sourceTree = "<group>";
+		};
+		78CD050D2BA5F4F200A24026 /* SortingView */ = {
+			isa = PBXGroup;
+			children = (
+				78CD050B2BA5F4D300A24026 /* SortingViewController.swift */,
+				78CD050E2BA5FA1F00A24026 /* SortingTableViewCell.swift */,
+			);
+			path = SortingView;
 			sourceTree = "<group>";
 		};
 		78D729972BA486D100296A31 = {
@@ -102,8 +120,10 @@
 			children = (
 				78D729A32BA486D100296A31 /* AppDelegate.swift */,
 				78CD04FD2BA4E39400A24026 /* MainView */,
+				78CD050D2BA5F4F200A24026 /* SortingView */,
 				78CD05022BA4ECF200A24026 /* AppModel */,
 				784423B22BA4CF7200E500C3 /* Extension.swift */,
+				78CD05122BA6572000A24026 /* UserSettings.swift */,
 				784423B42BA4D50500E500C3 /* Fonts */,
 				78D729AC2BA486D200296A31 /* Assets.xcassets */,
 				78D729AE2BA486D200296A31 /* LaunchScreen.storyboard */,
@@ -186,13 +206,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				784423B32BA4CF7200E500C3 /* Extension.swift in Sources */,
+				78CD05132BA6572000A24026 /* UserSettings.swift in Sources */,
 				78CD04FF2BA4E52100A24026 /* CollectionViewDepartmentCell.swift in Sources */,
 				78CD05082BA5D8D300A24026 /* MainTableViewCell.swift in Sources */,
+				78CD050C2BA5F4D300A24026 /* SortingViewController.swift in Sources */,
 				78D729BA2BA4984200296A31 /* APIManager.swift in Sources */,
 				78CD05042BA4EE2300A24026 /* ModelDepartmentList.swift in Sources */,
 				784423B12BA4A0DF00E500C3 /* ModelData.swift in Sources */,
+				78CD05112BA6059D00A24026 /* ModelDataForSorting.swift in Sources */,
 				78D729A82BA486D100296A31 /* MainViewController.swift in Sources */,
 				78D729A42BA486D100296A31 /* AppDelegate.swift in Sources */,
+				78CD050F2BA5FA1F00A24026 /* SortingTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
