@@ -28,7 +28,7 @@ class MainViewController: UIViewController {
     //Временный список персон для поиска
     var peopleFromFilter: [Item] = []
     
-    //Временный список персон одного департамента для сортировки
+    //Временный список персон одного департамента
     var peopleFromDepartment: [Item] = []
     
     //Массив полученных данных с полным списком людей
@@ -54,9 +54,11 @@ class MainViewController: UIViewController {
         $0.backgroundColor = .clear
         $0.attributedPlaceholder = NSAttributedString(string: "Введи имя, тег, почту...", attributes: [NSAttributedString.Key.foregroundColor: UIColor(rgb: 0xC3C3C6)])
         $0.textAlignment = .left
+        $0.tintColor = UIColor(rgb: 0x6534FF)
         $0.font = UIFont(name: "Inter-Medium", size: 15)
         $0.textColor = UIColor(rgb: 0x050510)
-        $0.addTarget(self, action: #selector(endEdition), for: .editingChanged)
+        $0.addTarget(self, action: #selector(endEditionTextField), for: .editingChanged)
+        $0.delegate = self
         return $0
     }(UITextField())
     
@@ -72,6 +74,17 @@ class MainViewController: UIViewController {
         $0.isUserInteractionEnabled = true
         return $0
     }(UIImageView())
+    
+    private lazy var cancellButton: UIButton = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.setAttributedTitle(NSAttributedString(string: "Отмена", attributes: [NSAttributedString.Key.foregroundColor: UIColor(rgb: 0x6534FF), NSAttributedString.Key.font: UIFont(name: "Inter-SemiBold", size: 14) as Any]), for: .normal)
+        $0.addTarget(self, action: #selector(tapOnButton), for: .touchUpInside)
+        $0.isHidden = true
+        return $0
+    }(UIButton())
+    
+    private var buttonIsHiden = [NSLayoutConstraint]()
+    private var buttonNotHiden = [NSLayoutConstraint]()
     
     //MARK: - collectionView
     private lazy var collectionViewDepartment: UICollectionView = {
@@ -111,7 +124,6 @@ class MainViewController: UIViewController {
     private lazy var refreshTableView: UIRefreshControl = {
         $0.tintColor = UIColor(rgb: 0x595F67)
         $0.addTarget(self, action: #selector(refresh), for: .valueChanged)
-        
         return $0
     }(UIRefreshControl())
     
@@ -135,7 +147,21 @@ class MainViewController: UIViewController {
         present(vc, animated: true)
     }
     
-    @objc private func endEdition() {
+    @objc private func tapOnButton() {
+        NSLayoutConstraint.deactivate(buttonNotHiden)
+        NSLayoutConstraint.activate(buttonIsHiden)
+        UIView.animate(withDuration: 0.35) {
+            self.cancellButton.alpha = 0
+            self.sortingImg.alpha = 1
+            self.view.layoutIfNeeded()
+        } completion: { _ in
+            self.cancellButton.isHidden = true
+            self.sortingImg.isHidden = false
+        }
+        textField.endEditing(true)
+    }
+    
+    @objc private func endEditionTextField() {
         if let text = textField.text {
             tempString = text
         }
@@ -157,6 +183,7 @@ class MainViewController: UIViewController {
         present(vc, animated: true)
     }
     
+    //MARK: - fetchData
     private func fetchData() {
         APIManager.shared.getData { [weak self] values in
             DispatchQueue.main.async {
@@ -192,16 +219,26 @@ class MainViewController: UIViewController {
         }
     }
     
+    //MARK: - layout
     private func layout() {
         
-        [backGrSearchView, imgSearchView, textField, sortingImg, collectionViewDepartment, collectionLineView, mainTableView].forEach{view.addSubview($0)}
+        buttonIsHiden = [cancellButton.widthAnchor.constraint(equalToConstant: 0)]
+        buttonNotHiden = [cancellButton.widthAnchor.constraint(equalToConstant: 78)]
+        
+        [backGrSearchView, imgSearchView, textField, sortingImg, cancellButton, collectionViewDepartment, collectionLineView, mainTableView].forEach{view.addSubview($0)}
         
         mainTableView.addSubview(refreshTableView)
+        
+        NSLayoutConstraint.activate(buttonIsHiden)
         
         NSLayoutConstraint.activate([
             backGrSearchView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             backGrSearchView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 6),
-            backGrSearchView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            backGrSearchView.trailingAnchor.constraint(equalTo: cancellButton.leadingAnchor),
+            
+            cancellButton.topAnchor.constraint(equalTo: backGrSearchView.topAnchor),
+            cancellButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            cancellButton.bottomAnchor.constraint(equalTo: backGrSearchView.bottomAnchor),
             
             imgSearchView.leadingAnchor.constraint(equalTo: backGrSearchView.leadingAnchor, constant: 12),
             imgSearchView.topAnchor.constraint(equalTo: backGrSearchView.topAnchor, constant: 8),
@@ -458,4 +495,26 @@ extension MainViewController: CriticalErrorViewDelegate {
         }
         dismiss(animated: true)
     }
+}
+
+//MARK: - UITextFieldDelegate
+extension MainViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.endEditing(true)
+        return true
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        NSLayoutConstraint.deactivate(buttonIsHiden)
+        NSLayoutConstraint.activate(buttonNotHiden)
+        UIView.animate(withDuration: 0.35) {
+            self.cancellButton.alpha = 1
+            self.sortingImg.alpha = 0
+            self.view.layoutIfNeeded()
+        } completion: { _ in
+            self.cancellButton.isHidden = false
+            self.sortingImg.isHidden = true
+        }
+    }
+    
 }
