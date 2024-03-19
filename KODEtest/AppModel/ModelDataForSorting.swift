@@ -12,7 +12,7 @@ struct SortingData {
     
     static func makeSortingData() -> SortingData {
         let titleName: [String] = ["По алфавиту", "По дню рождения"]
-        var sortingData = SortingData(titlePositionName: titleName)
+        let sortingData = SortingData(titlePositionName: titleName)
         return sortingData
     }
 }

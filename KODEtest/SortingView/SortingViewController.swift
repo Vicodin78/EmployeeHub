@@ -26,8 +26,8 @@ class SortingViewController: UIViewController {
     
     private let backArrow: UIImageView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.image = UIImage(systemName: "chevron.backward")
-        $0.tintColor = UIColor(rgb: 0x1C1E24)
+        $0.image = UIImage(named: "leftArrowForSorting")
+//        $0.tintColor = UIColor(rgb: 0x1C1E24)
         $0.contentMode = .center
         $0.isUserInteractionEnabled = true
         return $0
@@ -63,9 +63,9 @@ class SortingViewController: UIViewController {
         
         NSLayoutConstraint.activate([
             titleName.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            titleName.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 18),
+            titleName.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 14),
             
-            backArrow.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 25),
+            backArrow.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             backArrow.centerYAnchor.constraint(equalTo: titleName.centerYAnchor),
             
             sortingTableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 24),
@@ -99,5 +99,6 @@ extension SortingViewController: UITableViewDelegate {
         UserSettings.sortMarkerState = indexPath.row
         self.sortingTableView.reloadData()
         delegateSortMarkerState?.sortMarkerStateChange()
+        dismiss(animated: true)
     }
 }

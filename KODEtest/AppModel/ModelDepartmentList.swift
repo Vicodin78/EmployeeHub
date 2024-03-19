@@ -19,9 +19,8 @@ class DepartmentModel {
         for i in tempName {
             departmentName.append(i)
         }
-//        departmentName.sort()
+        departmentName.sort()
         departmentName.insert("all", at: 0)
-        print(departmentName)
         return departmentName
         
         

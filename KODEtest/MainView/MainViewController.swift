@@ -9,20 +9,27 @@ import UIKit
 
 class MainViewController: UIViewController {
     
-//    let vc = SortingViewController()
-    
+    //Временное значение вводимое в поле поиска
+    private var tempString = String()
+
     //Регулирует стиль первой ячейки при создании, не дает ячейке снова изменить стиль при пересоздании
     private var observerCollectionCell = 0
+    
+    //Управляет типом ячеек для отображения
+    private var observerTableViewCell = false
     
     //Фиксаторы состояний переключения коллекции департаментов
     private var currentSelected : Int?
     private var previousSelected : IndexPath?
     
-    //Временный список персон одного департамента для фильтрации
-    var peopleFromDepartment: [Item] = []
-    
     //Список департаментов
     var departmentList = [String]()
+    
+    //Временный список персон для поиска
+    var peopleFromFilter: [Item] = []
+    
+    //Временный список персон одного департамента для сортировки
+    var peopleFromDepartment: [Item] = []
     
     //Массив полученных данных с полным списком людей
     var tempData: [Item] = []
@@ -49,11 +56,11 @@ class MainViewController: UIViewController {
         $0.textAlignment = .left
         $0.font = UIFont(name: "Inter-Medium", size: 15)
         $0.textColor = UIColor(rgb: 0x050510)
-        //        $0.addTarget(self, action: #selector(valueChanged), for: .editingChanged)
+        $0.addTarget(self, action: #selector(endEdition), for: .editingChanged)
         return $0
     }(UITextField())
     
-    private let filterImg: UIImageView = {
+    private let sortingImg: UIImageView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.image = UIImage(systemName: "list.bullet.indent")
         if UserSettings.sortMarkerState == 0 {
@@ -66,6 +73,7 @@ class MainViewController: UIViewController {
         return $0
     }(UIImageView())
     
+    //MARK: - collectionView
     private lazy var collectionViewDepartment: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -87,53 +95,108 @@ class MainViewController: UIViewController {
         return $0
     }(UIView())
     
+    
+    //MARK: - mainTableView
     private lazy var mainTableView: UITableView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.register(MainTableViewCell.self, forCellReuseIdentifier: MainTableViewCell.identifier)
+        $0.register(PreloadMainTableViewCell.self, forCellReuseIdentifier: PreloadMainTableViewCell.identifier)
+        $0.register(NotFoundTableViewCell.self, forCellReuseIdentifier: NotFoundTableViewCell.identifier)
         $0.dataSource = self
         $0.delegate = self
         $0.separatorColor = .clear
         return $0
     }(UITableView())
     
-    private func tapGesturesForView() {
-        let tapGest = UITapGestureRecognizer(target: self, action: #selector(tapAction))
-        filterImg.addGestureRecognizer(tapGest)
+    private lazy var refreshTableView: UIRefreshControl = {
+        $0.tintColor = UIColor(rgb: 0x595F67)
+        $0.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        
+        return $0
+    }(UIRefreshControl())
+    
+    @objc private func refresh() {
+        fetchData()
+        refreshTableView.endRefreshing()
     }
     
-    @objc private func tapAction() {
+    private func tapGesturesForView() {
+        let tapGest = UITapGestureRecognizer(target: self, action: #selector(tapActionOnSortIcon))
+        sortingImg.addGestureRecognizer(tapGest)
+    }
+    
+    @objc private func tapActionOnSortIcon() {
         let vc = SortingViewController()
         vc.delegateSortMarkerState = self
+        if let sheet = vc.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.preferredCornerRadius = 20
+        }
         present(vc, animated: true)
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-//        vc.delegateSortMarkerState = self
+    @objc private func endEdition() {
+        if let text = textField.text {
+            tempString = text
+        }
+        if !peopleFromDepartment.isEmpty {
+            peopleFromFilter = peopleFromDepartment.filter{$0.firstName.lowercased().contains(tempString.lowercased())} + peopleFromDepartment.filter{$0.lastName.lowercased().contains(tempString.lowercased())} + peopleFromDepartment.filter{$0.userTag.lowercased().contains(tempString.lowercased())}
+        } else {
+            peopleFromFilter =
+                tempData.filter{$0.firstName.lowercased().contains(tempString.lowercased())} +
+                tempData.filter{$0.lastName.lowercased().contains(tempString.lowercased())} +
+                tempData.filter{$0.userTag.lowercased().contains(tempString.lowercased())}
+        }
+        mainTableView.reloadData()
+    }
+    
+    private func presentCriticalError() {
+        let vc = CriticalErrorViewController()
+        vc.modalPresentationStyle = .fullScreen
+        vc.tapButtondelegate = self
+        present(vc, animated: true)
+    }
+    
+    private func fetchData() {
+        APIManager.shared.getData { [weak self] values in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.tempData = values
+                self.departmentList = DepartmentModel.makeDepartmentsList(arrey: self.tempData)
+                self.observerTableViewCell = true
+                self.collectionViewDepartment.reloadData()
+                self.collectionViewDepartment.layoutIfNeeded()
+                self.mainTableView.reloadData()
+                self.mainTableView.layoutIfNeeded()
+            }
+        } codeResponse: { [weak self] code in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                if code == 500 {
+                    self.presentCriticalError()
+                }
+            }
+        }
+        if !Reachability.isConnectedToNetwork() {
+            presentCriticalError()
+        }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         tapGesturesForView()
-        
-        APIManager.shared.getData { [weak self] values in
-            DispatchQueue.main.async {
-                guard let self else { return }
-                self.tempData = values
-                self.departmentList = DepartmentModel.makeDepartmentsList(arrey: self.tempData)
-                self.collectionViewDepartment.reloadData()
-                self.collectionViewDepartment.layoutIfNeeded()
-                self.mainTableView.reloadData()
-                self.mainTableView.layoutIfNeeded()
-            }
-        }
         layout()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.fetchData()
+        }
     }
     
     private func layout() {
         
-        [backGrSearchView, imgSearchView, textField, filterImg, collectionViewDepartment, collectionLineView, mainTableView].forEach{view.addSubview($0)}
+        [backGrSearchView, imgSearchView, textField, sortingImg, collectionViewDepartment, collectionLineView, mainTableView].forEach{view.addSubview($0)}
+        
+        mainTableView.addSubview(refreshTableView)
         
         NSLayoutConstraint.activate([
             backGrSearchView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
@@ -146,15 +209,15 @@ class MainViewController: UIViewController {
             imgSearchView.widthAnchor.constraint(equalToConstant: 24),
             imgSearchView.heightAnchor.constraint(equalToConstant: 24),
             
-            filterImg.topAnchor.constraint(equalTo: backGrSearchView.topAnchor, constant: 8),
-            filterImg.trailingAnchor.constraint(equalTo: backGrSearchView.trailingAnchor, constant: -12),
-            filterImg.bottomAnchor.constraint(equalTo: backGrSearchView.bottomAnchor, constant: -8),
-            filterImg.widthAnchor.constraint(equalToConstant: 24),
-            filterImg.heightAnchor.constraint(equalToConstant: 24),
+            sortingImg.topAnchor.constraint(equalTo: backGrSearchView.topAnchor, constant: 8),
+            sortingImg.trailingAnchor.constraint(equalTo: backGrSearchView.trailingAnchor, constant: -12),
+            sortingImg.bottomAnchor.constraint(equalTo: backGrSearchView.bottomAnchor, constant: -8),
+            sortingImg.widthAnchor.constraint(equalToConstant: 24),
+            sortingImg.heightAnchor.constraint(equalToConstant: 24),
             
             textField.leadingAnchor.constraint(equalTo: imgSearchView.trailingAnchor, constant: 8),
             textField.topAnchor.constraint(equalTo: backGrSearchView.topAnchor, constant: 8),
-            textField.trailingAnchor.constraint(equalTo: filterImg.leadingAnchor),
+            textField.trailingAnchor.constraint(equalTo: sortingImg.leadingAnchor),
             textField.bottomAnchor.constraint(equalTo: backGrSearchView.bottomAnchor, constant: -8),
             
             collectionViewDepartment.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
@@ -169,7 +232,7 @@ class MainViewController: UIViewController {
             
             mainTableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             mainTableView.topAnchor.constraint(equalTo: collectionLineView.bottomAnchor, constant: 16),
-            mainTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 16),
+            mainTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             mainTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
@@ -261,51 +324,138 @@ extension MainViewController: UICollectionViewDelegateFlowLayout {
 
 //MARK: - UITableViewDataSource
 extension MainViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if !peopleFromDepartment.isEmpty {
-            return peopleFromDepartment.count
-        } else {
-            return tempData.count
+    func numberOfSections(in tableView: UITableView) -> Int {
+        switch observerTableViewCell {
+        case false:
+            return 10
+        case true:
+            if !peopleFromFilter.isEmpty {
+                return peopleFromFilter.count
+            } else {
+                if tempString.isEmpty {
+                    if !peopleFromDepartment.isEmpty {
+                        return peopleFromDepartment.count
+                    } else {
+                        return tempData.count
+                    }
+                } else {
+                    return 1
+                }
+            }
         }
     }
     
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        1
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: MainTableViewCell.identifier, for: indexPath) as! MainTableViewCell
-        if !peopleFromDepartment.isEmpty {
-            switch UserSettings.sortMarkerState {
-            case 0:
-                peopleFromDepartment.sort { $0.firstName < $1.firstName }
-                cell.setupCell(item: peopleFromDepartment[indexPath.row])
-            default:
-                cell.setupCell(item: peopleFromDepartment[indexPath.row])
+        switch observerTableViewCell {
+        case false:
+            let preloadCell = tableView.dequeueReusableCell(withIdentifier: PreloadMainTableViewCell.identifier, for: indexPath) as! PreloadMainTableViewCell
+            return preloadCell
+        case true:
+            if !tempString.isEmpty && peopleFromFilter.isEmpty {
+                let cell = tableView.dequeueReusableCell(withIdentifier: NotFoundTableViewCell.identifier, for: indexPath) as! NotFoundTableViewCell
+                return cell
             }
-        } else {
-            switch UserSettings.sortMarkerState {
-            case 0:
-                tempData.sort { $0.firstName < $1.firstName }
-                cell.setupCell(item: tempData[indexPath.row])
-            default:
-                cell.setupCell(item: tempData[indexPath.row])
+            let cell = tableView.dequeueReusableCell(withIdentifier: MainTableViewCell.identifier, for: indexPath) as! MainTableViewCell
+            if !peopleFromFilter.isEmpty {
+                switch UserSettings.sortMarkerState {
+                case 0:
+                    peopleFromFilter.sort { $0.firstName < $1.firstName }
+                    cell.setupCell(item: peopleFromFilter[indexPath.section])
+                default:
+                    cell.setupCell(item: peopleFromFilter[indexPath.section])
+                }
+            } else {
+                if !peopleFromDepartment.isEmpty {
+                    switch UserSettings.sortMarkerState {
+                    case 0:
+                        peopleFromDepartment.sort { $0.firstName < $1.firstName }
+                        cell.setupCell(item: peopleFromDepartment[indexPath.section])
+                    default:
+                        cell.setupCell(item: peopleFromDepartment[indexPath.section])
+                    }
+                } else {
+                    switch UserSettings.sortMarkerState {
+                    case 0:
+                        tempData.sort { $0.firstName < $1.firstName }
+                        cell.setupCell(item: tempData[indexPath.section])
+                    default:
+                        cell.setupCell(item: tempData[indexPath.section])
+                    }
+                }
             }
+            return cell
         }
-        return cell
     }
 }
 
 //MARK: - UITableViewDelegate
 extension MainViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        80
+        switch observerTableViewCell {
+        case false:
+            return 84
+        case true:
+            if !tempString.isEmpty && peopleFromFilter.isEmpty {
+                return 300
+            } else {
+                return 80
+            }
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if !peopleFromFilter.isEmpty {
+            let vc = ProfileViewController(item: peopleFromFilter[indexPath.section])
+            vc.modalPresentationStyle = .fullScreen
+            present(vc, animated: true)
+        } else {
+            if !peopleFromDepartment.isEmpty {
+                let vc = ProfileViewController(item: peopleFromDepartment[indexPath.section])
+                vc.modalPresentationStyle = .fullScreen
+                present(vc, animated: true)
+            } else {
+                let vc = ProfileViewController(item: tempData[indexPath.section])
+                vc.modalPresentationStyle = .fullScreen
+                present(vc, animated: true)
+            }
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let footer = UIView()
+        footer.backgroundColor = .white
+        return footer
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        4
     }
 }
 
+//MARK: - SortingViewDelegate
 extension MainViewController: SortingViewDelegate {
     func sortMarkerStateChange() {
         if UserSettings.sortMarkerState == 0 {
-            filterImg.tintColor = UIColor(rgb: 0xC3C3C6)
+            sortingImg.tintColor = UIColor(rgb: 0xC3C3C6)
         } else {
-            filterImg.tintColor = UIColor(rgb: 0x6534FF)
+            sortingImg.tintColor = UIColor(rgb: 0x6534FF)
         }
-        self.mainTableView.reloadData()
+        observerTableViewCell = false
+        mainTableView.reloadData()
+        fetchData()
+    }
+}
+
+//MARK: - CriticalErrorViewDelegate
+extension MainViewController: CriticalErrorViewDelegate {
+    func tapButton() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.fetchData()
+        }
+        dismiss(animated: true)
     }
 }

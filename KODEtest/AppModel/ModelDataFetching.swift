@@ -1,5 +1,5 @@
 //
-//  ModelData.swift
+//  ModelDataFetching.swift
 //  KODEtest
 //
 //  Created by Vicodin on 15.03.2024.
@@ -8,7 +8,7 @@
 import Foundation
 
 // MARK: - ModelType
-struct ModelData: Codable {
+struct ModelDataFetching: Codable {
     let items: [Item]
 }
 

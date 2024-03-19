@@ -12,12 +12,16 @@ class APIManager {
     static let shared = APIManager()
     
     let headers = ["Accept": "application/json, application/xml"]
+//    let headers = [
+//      "Prefer": "code=500",
+//      "Accept": "application/json, application/xml"
+//    ]
     
     let request = NSMutableURLRequest(url: NSURL(string: "https://stoplight.io/mocks/kode-api/trainee-test/331141861/users")! as URL,
                                       cachePolicy: .useProtocolCachePolicy,
                                       timeoutInterval: 10.0)
     
-    func getData(completion: @escaping ([Item]) -> Void) {
+    func getData(completion: @escaping ([Item]) -> Void, codeResponse: @escaping (Int) -> Void) {
         request.httpMethod = "GET"
         request.allHTTPHeaderFields = headers
         
@@ -27,10 +31,13 @@ class APIManager {
                 print(error as Any)
             } else {
                 let httpResponse = response as? HTTPURLResponse
-                print(httpResponse)
+                if let code = httpResponse?.statusCode {
+                    codeResponse(code)
+                }
+                print(httpResponse as Any)
             }
             guard let data else {return}
-            if let modelData = try? JSONDecoder().decode(ModelData.self, from: data) {
+            if let modelData = try? JSONDecoder().decode(ModelDataFetching.self, from: data) {
                 print("Succes decoding")
                 completion(modelData.items)
             } else {
