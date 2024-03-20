@@ -82,8 +82,6 @@ class ProfileViewController: UIViewController {
         dismiss(animated: true)
     }
     
-    
-    
     private func callForNumber(_ number: String) {
         let url = URL(string: "tel://\(number)")!
         if UIApplication.shared.canOpenURL(url) {

@@ -13,11 +13,12 @@ struct ModelDataFetching: Codable {
 }
 
 // MARK: - Item
-struct Item: Codable {
+struct Item: Codable, Hashable {
     let id: String
     let avatarURL: String
     let firstName, lastName, userTag, department: String
-    let position, birthday, phone: String
+    let position, phone: String
+    var birthday: String
 
     enum CodingKeys: String, CodingKey {
         case id

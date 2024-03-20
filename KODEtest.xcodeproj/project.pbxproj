@@ -32,6 +32,8 @@
 		78F3FF2F2BA9DEE1001CA1D3 /* CriticalErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F3FF2E2BA9DEE1001CA1D3 /* CriticalErrorViewController.swift */; };
 		78F3FF312BA9E7E1001CA1D3 /* IsConnectedToNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F3FF302BA9E7E1001CA1D3 /* IsConnectedToNetwork.swift */; };
 		78F3FF332BAA14FD001CA1D3 /* NotFoundTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F3FF322BAA14FD001CA1D3 /* NotFoundTableViewCell.swift */; };
+		78F3FF352BAB896F001CA1D3 /* SortingByBirthday.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F3FF342BAB896F001CA1D3 /* SortingByBirthday.swift */; };
+		78F3FF372BABA092001CA1D3 /* FooterTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F3FF362BABA092001CA1D3 /* FooterTableView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,6 +64,8 @@
 		78F3FF2E2BA9DEE1001CA1D3 /* CriticalErrorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CriticalErrorViewController.swift; sourceTree = "<group>"; };
 		78F3FF302BA9E7E1001CA1D3 /* IsConnectedToNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IsConnectedToNetwork.swift; sourceTree = "<group>"; };
 		78F3FF322BAA14FD001CA1D3 /* NotFoundTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotFoundTableViewCell.swift; sourceTree = "<group>"; };
+		78F3FF342BAB896F001CA1D3 /* SortingByBirthday.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortingByBirthday.swift; sourceTree = "<group>"; };
+		78F3FF362BABA092001CA1D3 /* FooterTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FooterTableView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +98,7 @@
 				78F3FF2B2BA9CE7D001CA1D3 /* PreloadMainTableViewCell.swift */,
 				78F3FF322BAA14FD001CA1D3 /* NotFoundTableViewCell.swift */,
 				78CD04FE2BA4E52100A24026 /* CollectionViewDepartmentCell.swift */,
+				78F3FF362BABA092001CA1D3 /* FooterTableView.swift */,
 			);
 			path = MainView;
 			sourceTree = "<group>";
@@ -115,6 +120,7 @@
 			children = (
 				78CD050B2BA5F4D300A24026 /* SortingViewController.swift */,
 				78CD050E2BA5FA1F00A24026 /* SortingTableViewCell.swift */,
+				78F3FF342BAB896F001CA1D3 /* SortingByBirthday.swift */,
 			);
 			path = SortingView;
 			sourceTree = "<group>";
@@ -254,6 +260,7 @@
 				78F3FF2F2BA9DEE1001CA1D3 /* CriticalErrorViewController.swift in Sources */,
 				78CD050C2BA5F4D300A24026 /* SortingViewController.swift in Sources */,
 				78D729BA2BA4984200296A31 /* APIManager.swift in Sources */,
+				78F3FF372BABA092001CA1D3 /* FooterTableView.swift in Sources */,
 				78F3FF332BAA14FD001CA1D3 /* NotFoundTableViewCell.swift in Sources */,
 				78CD05042BA4EE2300A24026 /* ModelDepartmentList.swift in Sources */,
 				78F3FF2C2BA9CE7D001CA1D3 /* PreloadMainTableViewCell.swift in Sources */,
@@ -264,6 +271,7 @@
 				78F3FF242BA7951D001CA1D3 /* ProfileViewController.swift in Sources */,
 				78F3FF2A2BA8E5B4001CA1D3 /* ModelProfileTableView.swift in Sources */,
 				78D729A42BA486D100296A31 /* AppDelegate.swift in Sources */,
+				78F3FF352BAB896F001CA1D3 /* SortingByBirthday.swift in Sources */,
 				78CD050F2BA5FA1F00A24026 /* SortingTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

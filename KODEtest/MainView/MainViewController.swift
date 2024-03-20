@@ -11,7 +11,7 @@ class MainViewController: UIViewController {
     
     //Временное значение вводимое в поле поиска
     private var tempString = String()
-
+    
     //Регулирует стиль первой ячейки при создании, не дает ячейке снова изменить стиль при пересоздании
     private var observerCollectionCell = 0
     
@@ -119,8 +119,9 @@ class MainViewController: UIViewController {
         $0.delegate = self
         $0.separatorColor = .clear
         $0.showsVerticalScrollIndicator = false
+        $0.backgroundColor = .white
         return $0
-    }(UITableView())
+    }(UITableView(frame: .zero, style: .grouped))
     
     private lazy var refreshTableView: UIRefreshControl = {
         $0.tintColor = UIColor(rgb: 0x595F67)
@@ -174,9 +175,9 @@ class MainViewController: UIViewController {
             peopleFromFilter = peopleFromDepartment.filter{$0.firstName.lowercased().contains(tempString.lowercased())} + peopleFromDepartment.filter{$0.lastName.lowercased().contains(tempString.lowercased())} + peopleFromDepartment.filter{$0.userTag.lowercased().contains(tempString.lowercased())}
         } else {
             peopleFromFilter =
-                tempData.filter{$0.firstName.lowercased().contains(tempString.lowercased())} +
-                tempData.filter{$0.lastName.lowercased().contains(tempString.lowercased())} +
-                tempData.filter{$0.userTag.lowercased().contains(tempString.lowercased())}
+            tempData.filter{$0.firstName.lowercased().contains(tempString.lowercased())} +
+            tempData.filter{$0.lastName.lowercased().contains(tempString.lowercased())} +
+            tempData.filter{$0.userTag.lowercased().contains(tempString.lowercased())}
         }
         mainTableView.reloadData()
     }
@@ -186,6 +187,22 @@ class MainViewController: UIViewController {
         vc.modalPresentationStyle = .fullScreen
         vc.tapButtondelegate = self
         present(vc, animated: true)
+    }
+    
+    private func getFutureBirthdaysSortedArrey(arrey: [Item]) -> [Item] {
+        var items = [Item]()
+        if let arrey = SortingByBirthday.sort.makeSortByBirthday(items: arrey).first {
+            items = arrey
+        }
+        return items
+    }
+    
+    private func getNextYearBirthdaysSortedArrey(arrey: [Item]) -> [Item] {
+        var items = [Item]()
+        if let arrey = SortingByBirthday.sort.makeSortByBirthday(items: arrey).last {
+            items = arrey
+        }
+        return items
     }
     
     //MARK: - fetchData
@@ -354,35 +371,99 @@ extension MainViewController: UICollectionViewDelegateFlowLayout {
                 peopleFromDepartment.append(i)
             }
         }
+        //Что бы поиск работал при переключении департаментов, когда в поле поиска уже введен запрос
+        if !tempString.isEmpty {
+            endEditionTextField()
+        }
         mainTableView.reloadData()
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        
     }
 }
 
 //MARK: - UITableViewDataSource
 extension MainViewController: UITableViewDataSource {
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch observerTableViewCell {
-        case false:
-            return 10
-        case true:
-            if !peopleFromFilter.isEmpty {
-                return peopleFromFilter.count
-            } else {
-                if tempString.isEmpty {
-                    if !peopleFromDepartment.isEmpty {
-                        return peopleFromDepartment.count
+    func numberOfSections(in tableView: UITableView) -> Int {
+        switch UserSettings.sortMarkerState {
+        case 0:
+            return 1
+        case 1:
+            switch observerTableViewCell {
+            case false:
+                return 1
+            case true:
+                if !peopleFromFilter.isEmpty {
+                    if !getFutureBirthdaysSortedArrey(arrey: peopleFromFilter).isEmpty && !getNextYearBirthdaysSortedArrey(arrey: peopleFromFilter).isEmpty {
+                        return 2
                     } else {
-                        return tempData.count
+                        return 1
                     }
                 } else {
-                    return 1
+                    if tempString.isEmpty {
+                        if !peopleFromDepartment.isEmpty {
+                            if !getFutureBirthdaysSortedArrey(arrey: peopleFromDepartment).isEmpty && !getNextYearBirthdaysSortedArrey(arrey: peopleFromDepartment).isEmpty {
+                                return 2
+                            } else {
+                                return 1
+                            }
+                        } else {
+                            if !getFutureBirthdaysSortedArrey(arrey: tempData).isEmpty && !getNextYearBirthdaysSortedArrey(arrey: tempData).isEmpty {
+                                return 2
+                            } else {
+                                return 1
+                            }
+                        }
+                    } else {
+                        return 1
+                    }
                 }
             }
+        default:
+            return 1
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        switch UserSettings.sortMarkerState {
+        case 0:
+            switch observerTableViewCell {
+            case false:
+                return 10
+            case true:
+                if !peopleFromFilter.isEmpty {
+                    return peopleFromFilter.count
+                } else {
+                    if tempString.isEmpty {
+                        if !peopleFromDepartment.isEmpty {
+                            return peopleFromDepartment.count
+                        } else {
+                            return tempData.count
+                        }
+                    } else {
+                        return 1
+                    }
+                }
+            }
+        case 1:
+            switch observerTableViewCell {
+            case false:
+                return 10
+            case true:
+                if !peopleFromFilter.isEmpty {
+                    return SortingByBirthday.sort.makeSortByBirthday(items: peopleFromFilter)[section].count
+                } else {
+                    if tempString.isEmpty {
+                        if !peopleFromDepartment.isEmpty {
+                            return SortingByBirthday.sort.makeSortByBirthday(items: peopleFromDepartment)[section].count
+                        } else {
+                            return SortingByBirthday.sort.makeSortByBirthday(items: tempData)[section].count
+                        }
+                    } else {
+                        return 1
+                    }
+                }
+            }
+        default:
+            return 0
         }
     }
     
@@ -403,8 +484,8 @@ extension MainViewController: UITableViewDataSource {
                     peopleFromFilter.sort { $0.firstName < $1.firstName }
                     cell.setupCell(item: peopleFromFilter[indexPath.row])
                 case 1:
-                    peopleFromFilter.sort { $0.birthday < $1.birthday }
-                    cell.setupCell(item: peopleFromFilter[indexPath.row])
+                    let modelArray = SortingByBirthday.sort.makeSortByBirthday(items: peopleFromFilter)[indexPath.section]
+                    cell.setupCell(item: modelArray[indexPath.row])
                 default:
                     break
                 }
@@ -415,8 +496,8 @@ extension MainViewController: UITableViewDataSource {
                         peopleFromDepartment.sort { $0.firstName < $1.firstName }
                         cell.setupCell(item: peopleFromDepartment[indexPath.row])
                     case 1:
-                        peopleFromDepartment.sort { $0.birthday < $1.birthday }
-                        cell.setupCell(item: peopleFromDepartment[indexPath.row])
+                        let modelArray = SortingByBirthday.sort.makeSortByBirthday(items: peopleFromDepartment)[indexPath.section]
+                        cell.setupCell(item: modelArray[indexPath.row])
                     default:
                         break
                     }
@@ -426,9 +507,8 @@ extension MainViewController: UITableViewDataSource {
                         tempData.sort { $0.firstName < $1.firstName }
                         cell.setupCell(item: tempData[indexPath.row])
                     case 1:
-//                        sortByBirthday(tempData)
-                        tempData.sort { $0.birthday < $1.birthday }
-                        cell.setupCell(item: tempData[indexPath.row])
+                        let modelArray = SortingByBirthday.sort.makeSortByBirthday(items: tempData)[indexPath.section]
+                        cell.setupCell(item: modelArray[indexPath.row])
                     default:
                         break
                     }
@@ -461,15 +541,60 @@ extension MainViewController: UITableViewDelegate {
             present(vc, animated: true)
         }
         
-        if !peopleFromFilter.isEmpty {
-            presentVC(dataItem: peopleFromFilter[indexPath.row])
-        } else {
-            if !peopleFromDepartment.isEmpty {
-                presentVC(dataItem: peopleFromDepartment[indexPath.row])
+        switch UserSettings.sortMarkerState {
+        case 0:
+            if !peopleFromFilter.isEmpty {
+                presentVC(dataItem: peopleFromFilter[indexPath.row])
             } else {
-                presentVC(dataItem: tempData[indexPath.row])
+                if !peopleFromDepartment.isEmpty {
+                    presentVC(dataItem: peopleFromDepartment[indexPath.row])
+                } else {
+                    presentVC(dataItem: tempData[indexPath.row])
+                }
             }
+        case 1:
+            if !peopleFromFilter.isEmpty {
+                presentVC(dataItem: SortingByBirthday.sort.makeSortByBirthday(items: peopleFromFilter)[indexPath.section][indexPath.row])
+            } else {
+                if !peopleFromDepartment.isEmpty {
+                    presentVC(dataItem: SortingByBirthday.sort.makeSortByBirthday(items: peopleFromDepartment)[indexPath.section][indexPath.row])
+                } else {
+                    presentVC(dataItem: SortingByBirthday.sort.makeSortByBirthday(items: tempData)[indexPath.section][indexPath.row])
+                }
+            }
+        default:
+            break
         }
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let now = Date()
+        let calendar = Calendar.current
+        let ageComponents = calendar.dateComponents([.year], from: now)
+        
+        if tableView.numberOfSections > 1 && section == 0 {
+            let vc = FooterTableView()
+            vc.makeTitle(title: "\(ageComponents.year!+1)")
+            return vc
+        } else {
+            return UIView()
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        if tableView.numberOfSections > 1 && section == 0 {
+            return 68
+        } else {
+            return 0
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        UIView()
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        0
     }
 }
 

@@ -94,7 +94,7 @@ class MainTableViewCell: UITableViewCell {
             case "02":
                 monthString = "фев"
             case "03":
-                monthString = "маh"
+                monthString = "мар"
             case "04":
                 monthString = "апр"
             case "05":
