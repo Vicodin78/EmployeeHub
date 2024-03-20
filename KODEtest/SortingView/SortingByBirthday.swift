@@ -59,7 +59,6 @@ class SortingByBirthday {
                 tempSortedDict.updateValue(items[index], forKey: ageComponents.day!)
             }
         }
-//        let finishDict = tempSortedDict.sorted(by: { $0.0 < $1.0 })
         
         //Распределяем людей на два массива: др после текущего дня и др в будущем году
         for (key, value) in tempSortedDict.sorted(by: { $0.0 < $1.0 }) {
