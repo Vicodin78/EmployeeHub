@@ -118,6 +118,7 @@ class MainViewController: UIViewController {
         $0.dataSource = self
         $0.delegate = self
         $0.separatorColor = .clear
+        $0.showsVerticalScrollIndicator = false
         return $0
     }(UITableView())
     
@@ -129,7 +130,9 @@ class MainViewController: UIViewController {
     
     @objc private func refresh() {
         fetchData()
-        refreshTableView.endRefreshing()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.refreshTableView.endRefreshing()
+        }
     }
     
     private func tapGesturesForView() {
@@ -151,6 +154,8 @@ class MainViewController: UIViewController {
         NSLayoutConstraint.deactivate(buttonNotHiden)
         NSLayoutConstraint.activate(buttonIsHiden)
         UIView.animate(withDuration: 0.35) {
+            self.textField.text = ""
+            self.endEditionTextField()
             self.cancellButton.alpha = 0
             self.sortingImg.alpha = 1
             self.view.layoutIfNeeded()
@@ -311,8 +316,6 @@ extension MainViewController: UICollectionViewDataSource {
         }
         return cell
     }
-    
-    
 }
 
 
@@ -361,7 +364,8 @@ extension MainViewController: UICollectionViewDelegateFlowLayout {
 
 //MARK: - UITableViewDataSource
 extension MainViewController: UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch observerTableViewCell {
         case false:
             return 10
@@ -382,10 +386,6 @@ extension MainViewController: UITableViewDataSource {
         }
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        1
-    }
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch observerTableViewCell {
         case false:
@@ -401,26 +401,36 @@ extension MainViewController: UITableViewDataSource {
                 switch UserSettings.sortMarkerState {
                 case 0:
                     peopleFromFilter.sort { $0.firstName < $1.firstName }
-                    cell.setupCell(item: peopleFromFilter[indexPath.section])
+                    cell.setupCell(item: peopleFromFilter[indexPath.row])
+                case 1:
+                    peopleFromFilter.sort { $0.birthday < $1.birthday }
+                    cell.setupCell(item: peopleFromFilter[indexPath.row])
                 default:
-                    cell.setupCell(item: peopleFromFilter[indexPath.section])
+                    break
                 }
             } else {
                 if !peopleFromDepartment.isEmpty {
                     switch UserSettings.sortMarkerState {
                     case 0:
                         peopleFromDepartment.sort { $0.firstName < $1.firstName }
-                        cell.setupCell(item: peopleFromDepartment[indexPath.section])
+                        cell.setupCell(item: peopleFromDepartment[indexPath.row])
+                    case 1:
+                        peopleFromDepartment.sort { $0.birthday < $1.birthday }
+                        cell.setupCell(item: peopleFromDepartment[indexPath.row])
                     default:
-                        cell.setupCell(item: peopleFromDepartment[indexPath.section])
+                        break
                     }
                 } else {
                     switch UserSettings.sortMarkerState {
                     case 0:
                         tempData.sort { $0.firstName < $1.firstName }
-                        cell.setupCell(item: tempData[indexPath.section])
+                        cell.setupCell(item: tempData[indexPath.row])
+                    case 1:
+//                        sortByBirthday(tempData)
+                        tempData.sort { $0.birthday < $1.birthday }
+                        cell.setupCell(item: tempData[indexPath.row])
                     default:
-                        cell.setupCell(item: tempData[indexPath.section])
+                        break
                     }
                 }
             }
@@ -439,37 +449,27 @@ extension MainViewController: UITableViewDelegate {
             if !tempString.isEmpty && peopleFromFilter.isEmpty {
                 return 300
             } else {
-                return 80
+                return 84
             }
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if !peopleFromFilter.isEmpty {
-            let vc = ProfileViewController(item: peopleFromFilter[indexPath.section])
+        func presentVC (dataItem :Item) {
+            let vc = ProfileViewController(item: dataItem)
             vc.modalPresentationStyle = .fullScreen
             present(vc, animated: true)
+        }
+        
+        if !peopleFromFilter.isEmpty {
+            presentVC(dataItem: peopleFromFilter[indexPath.row])
         } else {
             if !peopleFromDepartment.isEmpty {
-                let vc = ProfileViewController(item: peopleFromDepartment[indexPath.section])
-                vc.modalPresentationStyle = .fullScreen
-                present(vc, animated: true)
+                presentVC(dataItem: peopleFromDepartment[indexPath.row])
             } else {
-                let vc = ProfileViewController(item: tempData[indexPath.section])
-                vc.modalPresentationStyle = .fullScreen
-                present(vc, animated: true)
+                presentVC(dataItem: tempData[indexPath.row])
             }
         }
-    }
-    
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        let footer = UIView()
-        footer.backgroundColor = .white
-        return footer
-    }
-    
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        4
     }
 }
 

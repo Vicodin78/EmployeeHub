@@ -45,6 +45,13 @@ class MainTableViewCell: UITableViewCell {
         return $0
     }(UILabel())
     
+    private let birthday: UILabel = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.font = UIFont(name: "Inter-Regular", size: 15)
+        $0.textColor = UIColor(rgb: 0x55555C)
+        return $0
+    }(UILabel())
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         layout()
@@ -61,10 +68,60 @@ class MainTableViewCell: UITableViewCell {
         lastName.text = item.lastName
         tagName.text = item.userTag
         positionName.text = item.position
+        switch UserSettings.sortMarkerState {
+        case 1:
+            setBirthdayDate(data: item.birthday)
+        default:
+            birthday.text = ""
+        }
+    }
+    
+    private func setBirthdayDate(data: String) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        
+        if let date = formatter.date(from: data) {
+            formatter.dateFormat = "MM"
+            let month = formatter.string(from: date)
+            formatter.dateFormat = "dd"
+            let day = formatter.string(from: date)
+            
+            var monthString = String()
+            
+            switch month {
+            case "01":
+                monthString = "янв"
+            case "02":
+                monthString = "фев"
+            case "03":
+                monthString = "маh"
+            case "04":
+                monthString = "апр"
+            case "05":
+                monthString = "мая"
+            case "06":
+                monthString = "июн"
+            case "07":
+                monthString = "июл"
+            case "08":
+                monthString = "авг"
+            case "09":
+                monthString = "сен"
+            case "10":
+                monthString = "окт"
+            case "11":
+                monthString = "ноя"
+            case "12":
+                monthString = "дек"
+            default:
+                break
+            }
+            birthday.text = "\(day) \(monthString)"
+        }
     }
     
     private func layout() {
-        [imageForPerson, firstName, lastName, tagName, positionName].forEach{contentView.addSubview($0)}
+        [imageForPerson, firstName, lastName, tagName, positionName, birthday].forEach{contentView.addSubview($0)}
         
         NSLayoutConstraint.activate([
             imageForPerson.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -82,7 +139,10 @@ class MainTableViewCell: UITableViewCell {
             tagName.bottomAnchor.constraint(equalTo: lastName.bottomAnchor),
             
             positionName.leadingAnchor.constraint(equalTo: firstName.leadingAnchor),
-            positionName.topAnchor.constraint(equalTo: firstName.bottomAnchor, constant: 3)
+            positionName.topAnchor.constraint(equalTo: firstName.bottomAnchor, constant: 3),
+            
+            birthday.centerYAnchor.constraint(equalTo: firstName.bottomAnchor),
+            birthday.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -4)
         ])
     }
 }
