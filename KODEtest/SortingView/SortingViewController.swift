@@ -27,7 +27,6 @@ class SortingViewController: UIViewController {
     private let backArrow: UIImageView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.image = UIImage(named: "leftArrowForSorting")
-//        $0.tintColor = UIColor(rgb: 0x1C1E24)
         $0.contentMode = .center
         $0.isUserInteractionEnabled = true
         return $0

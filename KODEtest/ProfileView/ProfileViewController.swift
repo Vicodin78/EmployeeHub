@@ -67,9 +67,9 @@ class ProfileViewController: UIViewController {
         $0.register(ProfileTableViewCell.self, forCellReuseIdentifier: ProfileTableViewCell.identifier)
         $0.dataSource = self
         $0.delegate = self
-        $0.separatorInset = UIEdgeInsets.zero
+//        $0.separatorInset = UIEdgeInsets.zero
 //        $0.separatorColor = UIColor(rgb: 0xF7F7F8)
-        $0.separatorColor = .black
+        $0.separatorStyle = .none
         return $0
     }(UITableView())
     
@@ -165,15 +165,19 @@ class ProfileViewController: UIViewController {
 
 //MARK: - UITableViewDataSource
 extension ProfileViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         guard let itemPerson = currentItemPerson else { return 0 }
         return ModelProfileTableView.makeProfileTableData(person: itemPerson).count
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewCell.identifier, for: indexPath) as! ProfileTableViewCell
         if let itemPerson = currentItemPerson {
-            cell.setupCell(data: ModelProfileTableView.makeProfileTableData(person: itemPerson)[indexPath.row], logo: ModelProfileTableView.makeProfileLogoForTableData(person: itemPerson)[indexPath.row])
+            cell.setupCell(data: ModelProfileTableView.makeProfileTableData(person: itemPerson)[indexPath.section], logo: ModelProfileTableView.makeProfileLogoForTableData(person: itemPerson)[indexPath.section])
         }
         return cell
     }
@@ -191,6 +195,23 @@ extension ProfileViewController: UITableViewDelegate {
         let cell = tableView.cellForRow(at: indexPath) as! ProfileTableViewCell
         if cell.cellTitle.text == personData.phone {
             personData.phone.makeACall()
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let view = FooterProfileTableView()
+        if section + 1 < numberOfSections(in: tableView) {
+            return view
+        } else {
+            return UIView()
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        if section + 1 < numberOfSections(in: tableView) {
+            return 6
+        } else {
+            return 0
         }
     }
 }

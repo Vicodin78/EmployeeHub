@@ -34,6 +34,7 @@
 		78F3FF332BAA14FD001CA1D3 /* NotFoundTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F3FF322BAA14FD001CA1D3 /* NotFoundTableViewCell.swift */; };
 		78F3FF352BAB896F001CA1D3 /* SortingByBirthday.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F3FF342BAB896F001CA1D3 /* SortingByBirthday.swift */; };
 		78F3FF372BABA092001CA1D3 /* FooterTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F3FF362BABA092001CA1D3 /* FooterTableView.swift */; };
+		78F3FF392BAC35D8001CA1D3 /* FooterProfileTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F3FF382BAC35D8001CA1D3 /* FooterProfileTableView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -66,6 +67,7 @@
 		78F3FF322BAA14FD001CA1D3 /* NotFoundTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotFoundTableViewCell.swift; sourceTree = "<group>"; };
 		78F3FF342BAB896F001CA1D3 /* SortingByBirthday.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortingByBirthday.swift; sourceTree = "<group>"; };
 		78F3FF362BABA092001CA1D3 /* FooterTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FooterTableView.swift; sourceTree = "<group>"; };
+		78F3FF382BAC35D8001CA1D3 /* FooterProfileTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FooterProfileTableView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -166,6 +168,7 @@
 			children = (
 				78F3FF232BA7951D001CA1D3 /* ProfileViewController.swift */,
 				78F3FF272BA7A3F3001CA1D3 /* ProfileTableViewCell.swift */,
+				78F3FF382BAC35D8001CA1D3 /* FooterProfileTableView.swift */,
 			);
 			path = ProfileView;
 			sourceTree = "<group>";
@@ -266,6 +269,7 @@
 				78F3FF2C2BA9CE7D001CA1D3 /* PreloadMainTableViewCell.swift in Sources */,
 				784423B12BA4A0DF00E500C3 /* ModelDataFetching.swift in Sources */,
 				78F3FF312BA9E7E1001CA1D3 /* IsConnectedToNetwork.swift in Sources */,
+				78F3FF392BAC35D8001CA1D3 /* FooterProfileTableView.swift in Sources */,
 				78CD05112BA6059D00A24026 /* ModelDataForSorting.swift in Sources */,
 				78D729A82BA486D100296A31 /* MainViewController.swift in Sources */,
 				78F3FF242BA7951D001CA1D3 /* ProfileViewController.swift in Sources */,
