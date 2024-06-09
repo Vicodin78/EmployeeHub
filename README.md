@@ -23,17 +23,10 @@ Employee Directory App - это тестовое клиент-серверное
 
 ## Скриншоты
 
-![Экран загрузки](Screenshots/IMG_1456.PNG)
-![Главный экран](Screenshots/IMG_1449.PNG)
-![Обновление списка](Screenshots/IMG_1459.PNG)
-![Выбранный департамент](Screenshots/IMG_1450.PNG)
-![Выбор типа сортировки](Screenshots/IMG_1452.PNG)
-![Сортировка по дате рождения](Screenshots/IMG_1453.PNG)
-![Поиск найдено](Screenshots/IMG_1460.PNG)
-![Поиск не найдено](Screenshots/IMG_1454.PNG)
-![Детальная информация](Screenshots/IMG_1455.PNG)
-![Звонок](Screenshots/IMG_1456.PNG)
-![Отсутсвие связи с сервером](Screenshots/IMG_1458.PNG)
+<img src="Screenshots/IMG_1457.PNG" alt="Экран загрузки" width="270"> <img src="Screenshots/IMG_1449.PNG" alt="Главный экран" width="270"> <img src="Screenshots/IMG_1459.PNG" alt="Обновление списка" width="270">
+<img src="Screenshots/IMG_1450.PNG" alt="Выбранный департамент" width="270"> <img src="Screenshots/IMG_1452.PNG" alt="Выбор типа сортировки" width="270"> <img src="Screenshots/IMG_1453.PNG" alt="Сортировка по дате рождения" width="270">
+<img src="Screenshots/IMG_1460.PNG" alt="Поиск найдено" width="270"> <img src="Screenshots/IMG_1454.PNG" alt="Поиск не найдено" width="270"> <img src="Screenshots/IMG_1455.PNG" alt="Детальная информация" width="270">
+<img src="Screenshots/IMG_1456.PNG" alt="Звонок" width="270"> <img src="Screenshots/IMG_1458.PNG" alt="Отсутствие связи с сервером" width="270">
 
 ## Установка
 
