@@ -23,9 +23,9 @@ Employee Directory App - это тестовое клиент-серверное
 
 ## Скриншоты
 
-<img src="Screenshots/IMG_1457.PNG" alt="Экран загрузки" width="270"> <img src="Screenshots/IMG_1449.PNG" alt="Главный экран" width="270"> <img src="Screenshots/IMG_1459.PNG" alt="Обновление списка" width="270">
-<img src="Screenshots/IMG_1450.PNG" alt="Выбранный департамент" width="270"> <img src="Screenshots/IMG_1452.PNG" alt="Выбор типа сортировки" width="270"> <img src="Screenshots/IMG_1453.PNG" alt="Сортировка по дате рождения" width="270">
-<img src="Screenshots/IMG_1460.PNG" alt="Поиск найдено" width="270"> <img src="Screenshots/IMG_1454.PNG" alt="Поиск не найдено" width="270"> <img src="Screenshots/IMG_1455.PNG" alt="Детальная информация" width="270">
+<img src="Screenshots/Снимок экрана 2024-06-10 в 01.02.29.png" alt="Экран загрузки" width="270"> <img src="Screenshots/Снимок экрана 2024-06-10 в 01.02.48.png" alt="Главный экран" width="270"> <img src="Screenshots/Снимок экрана 2024-06-10 в 01.04.43.png" alt="Обновление списка" width="270">
+<img src="Screenshots/Снимок экрана 2024-06-10 в 01.05.28.png" alt="Выбранный департамент" width="270"> <img src="Screenshots/Снимок экрана 2024-06-10 в 01.05.44.png" alt="Выбор типа сортировки" width="270"> <img src="Screenshots/Снимок экрана 2024-06-10 в 01.05.54.png" alt="Сортировка по дате рождения" width="270">
+<img src="Screenshots/Снимок экрана 2024-06-10 в 01.06.50.png" alt="Поиск найдено" width="270"> <img src="Screenshots/Снимок экрана 2024-06-10 в 01.06.57.png" alt="Поиск не найдено" width="270"> <img src="Screenshots/Снимок экрана 2024-06-10 в 01.07.10.png" alt="Детальная информация" width="270">
 <img src="Screenshots/IMG_1456.PNG" alt="Звонок" width="270"> <img src="Screenshots/IMG_1458.PNG" alt="Отсутствие связи с сервером" width="270">
 
 ## Установка
